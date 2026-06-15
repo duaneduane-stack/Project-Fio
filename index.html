@@ -89,6 +89,9 @@
       const loveNote = document.getElementById('loveNote');
       const destinyLabel = document.getElementById('destinyLabel');
 
+      // Initialize the quick click sound effect asset
+      const clickFX = new Audio('click-sound.mp3');
+
       // Configuration
       const GROWTH_PER_CLICK = 35;
       const FONT_GROWTH_PER_CLICK = 25;
@@ -111,7 +114,7 @@
         'Think about it again, Fio...',
         'Please say yes? ❤️',
         'I promise to always make you smile!',
-        'No 🏃‍♂️', // Made the moving label short so it stays tiny
+        'No 🏃‍♂️',
       ];
 
       const ALT_TEXTS = [
@@ -132,13 +135,11 @@
 
       // Function to move the No button randomly around the screen with hyper-speed transitions
       function teleportNoButton() {
-        // Shrink the button size drastically down on the final instance
         noButton.style.width = '65px';
         noButton.style.height = '35px';
         noButton.style.fontSize = '14px';
         noButton.style.padding = '0px';
         
-        // Accelerated transition physics to make it way slicker and harder to track
         noButton.style.transition = 'all 0.08s cubic-bezier(0.19, 1, 0.22, 1)';
         
         const padding = 40;
@@ -154,6 +155,10 @@
       }
 
       noButton.addEventListener('click', () => {
+        // Play click sound effect instantly on every press
+        clickFX.currentTime = 0; // Rewinds sound to start case for rapid clicking
+        clickFX.play();
+
         if (noClickCount >= MAX_NO_CLICKS) {
           teleportNoButton();
           return;
@@ -182,7 +187,7 @@
 
         // Activate evasion mode and show stationary text if final state hit
         if (noClickCount === MAX_NO_CLICKS) {
-          destinyLabel.classList.remove('hidden'); // Show stationary text cleanly
+          destinyLabel.classList.remove('hidden');
           teleportNoButton();
         }
       });
@@ -195,16 +200,20 @@
       });
 
       yesButton.addEventListener('click', () => {
+        // Play regular click sound effect once before the big celebration music tracks over it
+        clickFX.currentTime = 0;
+        clickFX.play();
+
         imageDisplay.src = IMAGE_PATHS[IMAGE_PATHS.length - 1];
         imageDisplay.alt = ALT_TEXTS[ALT_TEXTS.length - 1];
         
         // Custom, playful victory success state changes!
         valentineQuestion.textContent = "Phew! For a second there, I thought I'd have to make the button run faster. Glad we're on the same page! 😂🤍";
         loveNote.style.display = 'none'; 
-        destinyLabel.style.display = 'none'; // Clear the tease out on success
+        destinyLabel.style.display = 'none';
         responseButtons.style.display = 'none';
 
-        // Play local MP3 audio instantly when she clicks Yes
+        // Play local MP3 audio loop instantly when she clicks Yes
         const audio = new Audio('success-music.mp3');
         audio.loop = true; 
         audio.play();
