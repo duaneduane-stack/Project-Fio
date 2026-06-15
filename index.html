@@ -94,7 +94,7 @@
       clickFX.preload = 'auto';
       clickFX.load();
 
-      // Initialize the new trolling/evading sound effect for the hyper-speed runaway phase
+      // Initialize the trolling/evading sound effect for the hyper-speed runaway phase
       const evadeFX = new Audio('evade-sound.mp3?v=2');
       evadeFX.preload = 'auto';
       evadeFX.load();
@@ -168,14 +168,11 @@
       }
 
       noButton.addEventListener('click', () => {
+        // LOGICAL AUDIO FIX: If we are already at or past the limit, ONLY evade. Don't play the click pop.
         if (noClickCount >= MAX_NO_CLICKS) {
           teleportNoButton();
           return;
         }
-
-        // Play regular click sound effect instantly for the first 5 normal stages
-        clickFX.currentTime = 0; 
-        clickFX.play();
 
         noClickCount++;
 
@@ -201,7 +198,11 @@
         // Activate evasion mode and show stationary text if final state hit
         if (noClickCount === MAX_NO_CLICKS) {
           destinyLabel.classList.remove('hidden');
-          teleportNoButton();
+          teleportNoButton(); // This handles playing evadeFX cleanly on the transition click
+        } else {
+          // Play regular click sound effect ONLY for standard click intervals (1 through 4)
+          clickFX.currentTime = 0; 
+          clickFX.play();
         }
       });
 
@@ -236,13 +237,4 @@
           path: 'M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z',
         });
 
-        const defaults = { spread: 360, ticks: 100, gravity: 0, decay: 0.94, startVelocity: 20, shapes: [heart], colors: ['#ff69b4', '#ff1493', '#ff6b81', '#e84393'] };
-
-        confetti({ ...defaults, particleCount: 50, scalar: 2 });
-        confetti({ ...defaults, particleCount: 25, scalar: 3 });
-        confetti({ ...defaults, particleCount: 10, scalar: 4 });
-      });
-    })();
-  </script>
-</body>
-</html>
+        const defaults = { spread: 360,
