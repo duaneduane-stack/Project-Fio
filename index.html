@@ -89,10 +89,15 @@
       const loveNote = document.getElementById('loveNote');
       const destinyLabel = document.getElementById('destinyLabel');
 
-      // Initialize and aggressively optimize the click sound asset layout
-      const clickFX = new Audio('click-sound.mp3');
+      // Initialize regular click sound effect asset with a cache buster
+      const clickFX = new Audio('click-sound.mp3?v=2');
       clickFX.preload = 'auto';
       clickFX.load();
+
+      // Initialize the new trolling/evading sound effect for the hyper-speed runaway phase
+      const evadeFX = new Audio('evade-sound.mp3?v=2');
+      evadeFX.preload = 'auto';
+      evadeFX.load();
 
       // Configuration
       const GROWTH_PER_CLICK = 35;
@@ -137,11 +142,17 @@
 
       // Function to move the No button randomly around the screen with hyper-speed transitions
       function teleportNoButton() {
+        // Play the funny evasion sound effect instantly whenever the button runs away
+        evadeFX.currentTime = 0;
+        evadeFX.play();
+
+        // Shrink the button size drastically down on the final instance
         noButton.style.width = '65px';
         noButton.style.height = '35px';
         noButton.style.fontSize = '14px';
         noButton.style.padding = '0px';
         
+        // Accelerated transition physics to make it slippery
         noButton.style.transition = 'all 0.08s cubic-bezier(0.19, 1, 0.22, 1)';
         
         const padding = 40;
@@ -157,14 +168,14 @@
       }
 
       noButton.addEventListener('click', () => {
-        // Play click sound effect instantly on every press
-        clickFX.currentTime = 0; 
-        clickFX.play();
-
         if (noClickCount >= MAX_NO_CLICKS) {
           teleportNoButton();
           return;
         }
+
+        // Play regular click sound effect instantly for the first 5 normal stages
+        clickFX.currentTime = 0; 
+        clickFX.play();
 
         noClickCount++;
 
