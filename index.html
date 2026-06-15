@@ -109,13 +109,13 @@
       const loveNote = document.getElementById('loveNote');
       const destinyLabel = document.getElementById('destinyLabel');
 
-      // Initialize regular click sound effect asset with a cache buster
-      const clickFX = new Audio('click-sound.mp3?v=2');
+      // Initialize regular click sound effect asset cleanly
+      const clickFX = new Audio('click-sound.mp3');
       clickFX.preload = 'auto';
       clickFX.load();
 
-      // Initialize the trolling/evading sound effect for the hyper-speed runaway phase
-      const evadeFX = new Audio('evade-sound.mp3?v=2');
+      // Initialize the trolling/evading sound effect cleanly
+      const evadeFX = new Audio('evade-sound.mp3');
       evadeFX.preload = 'auto';
       evadeFX.load();
 
@@ -189,7 +189,7 @@
       let buttonWidth = 80;
       let fontSize = 20;
 
-      // Function to move the No button randomly around the screen with hyper-speed transitions
+      // Function to move the No button randomly around the screen, universally scaling to any resolution
       function teleportNoButton() {
         // Play the funny evasion sound effect instantly whenever the button runs away
         evadeFX.currentTime = 0;
@@ -204,16 +204,41 @@
         // Accelerated transition physics to make it slippery
         noButton.style.transition = 'all 0.08s cubic-bezier(0.19, 1, 0.22, 1)';
         
-        const padding = 40;
-        const maxX = window.innerWidth - 65 - padding;
-        const maxY = window.innerHeight - 35 - padding;
+        // Break out of container boundary nesting constraints and append to page body
+        if (noButton.parentElement !== document.body) {
+          document.body.appendChild(noButton);
+        }
 
-        const randomX = Math.max(padding, Math.floor(Math.random() * maxX));
-        const randomY = Math.max(padding, Math.floor(Math.random() * maxY));
+        // 1. Grab the exact physical layout boundaries of the element dynamically
+        const buttonRect = noButton.getBoundingClientRect();
+        const btnWidth = buttonRect.width || 65;
+        const btnHeight = buttonRect.height || 35;
 
+        // 2. Define dynamic, resolution-aware safety pads (5% of the total screen space)
+        const padX = window.innerWidth * 0.05;
+        const padY = window.innerHeight * 0.05;
+
+        // 3. Calculate strict maximum coordinate thresholds so it stays inside the viewport walls
+        const minX = padX;
+        const maxX = window.innerWidth - btnWidth - padX;
+        const minY = padY;
+        const maxY = window.innerHeight - btnHeight - padY;
+
+        // Fallback safety gates: if screen bounds clip, center values automatically
+        const safeMaxX = maxX > minX ? maxX : window.innerWidth - btnWidth;
+        const safeMinX = maxX > minX ? minX : 0;
+        const safeMaxY = maxY > minY ? maxY : window.innerHeight - btnHeight;
+        const safeMinY = maxY > minY ? minY : 0;
+
+        // 4. Generate random integers strictly locked within the screen asset box boundaries
+        const randomX = Math.floor(Math.random() * (safeMaxX - safeMinX + 1)) + safeMinX;
+        const randomY = Math.floor(Math.random() * (safeMaxY - safeMinY + 1)) + safeMinY;
+
+        // 5. Apply the coordinates perfectly across the absolute viewport plane
         noButton.style.position = 'absolute';
         noButton.style.left = `${randomX}px`;
         noButton.style.top = `${randomY}px`;
+        noButton.style.zIndex = '9999'; // Ensure it renders on top layer
       }
 
       noButton.addEventListener('click', () => {
@@ -275,6 +300,11 @@
         loveNote.style.display = 'none'; 
         destinyLabel.style.display = 'none';
         responseButtons.style.display = 'none';
+        
+        // If the No button got appended to the body, clean it out completely on success
+        if (noButton.parentNode) {
+          noButton.parentNode.removeChild(noButton);
+        }
 
         // Play local MP3 audio loop instantly when she clicks Yes
         const audio = new Audio('success-music.mp3');
