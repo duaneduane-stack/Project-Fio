@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="A cute customized page for Fio!">
+  <meta name="description" content="Click this link, I have a quick question for you! 👀">
   <meta name="theme-color" content="#ffd0e5">
   <title>Hi my Fio</title>
   <script src="https://cdn.tailwindcss.com"></script>
@@ -57,6 +57,10 @@
         Hi Fio, will you be my girlfriend? 🤍
       </h1>
 
+      <p id="destinyLabel" class="hidden text-lg font-bold text-red-600 text-center animate-pulse my-2 px-4">
+        REALLY NO. But Destiny says you have to click YES! 👀
+      </p>
+
       <div id="responseButtons" class="flex gap-4 pt-4 items-center">
         <button
           id="yesButton"
@@ -83,6 +87,7 @@
       const valentineQuestion = document.getElementById('valentineQuestion');
       const responseButtons = document.getElementById('responseButtons');
       const loveNote = document.getElementById('loveNote');
+      const destinyLabel = document.getElementById('destinyLabel');
 
       // Configuration
       const GROWTH_PER_CLICK = 35;
@@ -106,7 +111,7 @@
         'Think about it again, Fio...',
         'Please say yes? ❤️',
         'I promise to always make you smile!',
-        'REALLY NO. But Destiny says you have to click YES! 👀',
+        'No 🏃‍♂️', // Made the moving label short so it stays tiny
       ];
 
       const ALT_TEXTS = [
@@ -127,12 +132,18 @@
 
       // Function to move the No button randomly around the screen with hyper-speed transitions
       function teleportNoButton() {
-        noButton.style.width = 'auto'; // Let the text center naturally
-        noButton.style.transition = 'all 0.1s cubic-bezier(0.25, 1, 0.5, 1)';
+        // Shrink the button size drastically down on the final instance
+        noButton.style.width = '65px';
+        noButton.style.height = '35px';
+        noButton.style.fontSize = '14px';
+        noButton.style.padding = '0px';
         
-        const padding = 50;
-        const maxX = window.innerWidth - noButton.offsetWidth - padding;
-        const maxY = window.innerHeight - noButton.offsetHeight - padding;
+        // Accelerated transition physics to make it way slicker and harder to track
+        noButton.style.transition = 'all 0.08s cubic-bezier(0.19, 1, 0.22, 1)';
+        
+        const padding = 40;
+        const maxX = window.innerWidth - 65 - padding;
+        const maxY = window.innerHeight - 35 - padding;
 
         const randomX = Math.max(padding, Math.floor(Math.random() * maxX));
         const randomY = Math.max(padding, Math.floor(Math.random() * maxY));
@@ -169,8 +180,9 @@
         // Update "No" button text with increasingly desperate messages
         noButton.textContent = NO_BUTTON_MESSAGES[noClickCount];
 
-        // Activate evasion mode if final state hit
+        // Activate evasion mode and show stationary text if final state hit
         if (noClickCount === MAX_NO_CLICKS) {
+          destinyLabel.classList.remove('hidden'); // Show stationary text cleanly
           teleportNoButton();
         }
       });
@@ -189,6 +201,7 @@
         // Custom, playful victory success state changes!
         valentineQuestion.textContent = "Phew! For a second there, I thought I'd have to make the button run faster. Glad we're on the same page! 😂🤍";
         loveNote.style.display = 'none'; 
+        destinyLabel.style.display = 'none'; // Clear the tease out on success
         responseButtons.style.display = 'none';
 
         // Play local MP3 audio instantly when she clicks Yes
