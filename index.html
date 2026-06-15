@@ -1,129 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Click this link, I have a quick question for you! 👀">
-  <meta name="theme-color" content="#ffd0e5">
-  <title>Hi my Fio</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-  <style>
-    .gradient-background {
-      background: linear-gradient(180deg, #ffd0e5 0%, #ffe8f2 36%, #ffffff 100%);
-      min-height: 100vh;
-    }
-
-    .bounce {
-      animation: bounce 2s ease infinite;
-    }
-
-    @keyframes bounce {
-      0%, 20%, 50%, 80%, 100% {
-        transform: translateY(0);
-      }
-      40% {
-        transform: translateY(-20px);
-      }
-      60% {
-        transform: translateY(-10px);
-      }
-    }
-  </style>
-  <link rel="preload" as="image" href="./images/image1.gif">
-  <link rel="preload" as="image" href="./images/image2.gif">
-  <link rel="preload" as="image" href="./images/image3.gif">
-  <link rel="preload" as="image" href="./images/image4.gif">
-  <link rel="preload" as="image" href="./images/image5.gif">
-  <link rel="preload" as="image" href="./images/image6.gif">
-  <link rel="preload" as="image" href="./images/image7.gif">
-</head>
-<body class="gradient-background">
-
-  <main class="flex items-center justify-center h-screen overflow-hidden relative">
-    
-    <section id="greetingStage" class="flex flex-col items-center p-6 max-w-md mx-auto text-center transition-all duration-500 transform scale-100 opacity-100">
-      <h1 class="text-4xl font-bold italic text-[#bd1e59] mb-4">
-        Hi Fio! ✨
-      </h1>
-      <p class="text-lg font-medium text-[#bd1e59] opacity-90 italic mb-8 max-w-xs">
-        I made something small for you. I hope it puts a smile on your face... 😊🤍
-      </p>
-      <button
-        id="enterButton"
-        class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-xl font-medium cursor-pointer px-6 py-3 bg-[#bd1e59] text-white transition-all duration-300 ease-in-out hover:bg-[#a01649] shadow-md hover:scale-105 active:scale-95"
-      >
-        Click here ❤️
-      </button>
-    </section>
-
-    <section id="proposalStage" class="hidden flex flex-col items-center p-4 max-w-md mx-auto opacity-0 transition-all duration-500 transform scale-95">
-      <img
-        id="imageDisplay"
-        src="./images/image1.gif"
-        alt="Cute kitten with flowers"
-        class="rounded-xl h-[300px] object-cover mb-2 shadow-sm"
-      />
-      
-      <p id="loveNote" class="text-base font-medium text-[#bd1e59] opacity-90 text-center italic my-2 px-4 transition-all duration-500">
-        "From the moment we started talking, you’ve made my world so much brighter. I want to be there for you through everything..."
-      </p>
-
-      <h1 id="valentineQuestion" class="text-3xl font-bold italic text-[#bd1e59] my-3 text-center px-2">
-        Hi Fio, will you be my girlfriend? 🤍
-      </h1>
-
-      <p id="destinyLabel" class="hidden text-lg font-bold text-red-600 text-center animate-pulse my-2 px-4">
-        REALLY NO. But Destiny says you have to click YES! 👀
-      </p>
-
-      <div id="responseButtons" class="flex gap-4 pt-4 items-center">
-        <button
-          id="yesButton"
-          class="bounce inline-flex items-center justify-center whitespace-nowrap rounded-md text-xl font-medium cursor-pointer px-4 py-2 bg-green-500 text-white transition-all duration-300 ease-in-out hover:bg-green-400 min-h-12 min-w-[75px]"
-        >
-          Yes
-        </button>
-        <button
-          id="noButton"
-          class="inline-flex items-center justify-center text-center whitespace-nowrap rounded-md text-xl font-medium cursor-pointer px-6 py-2 bg-red-500 text-white transition-colors hover:bg-red-700 h-12 min-w-[75px]"
-        >
-          No
-        </button>
-      </div>
-    </section>
-  </main>
-
-  <script>
-    (() => {
-      // DOM references
-      const greetingStage = document.getElementById('greetingStage');
-      const proposalStage = document.getElementById('proposalStage');
-      const enterButton = document.getElementById('enterButton');
-      
-      const yesButton = document.getElementById('yesButton');
-      const noButton = document.getElementById('noButton');
-      const imageDisplay = document.getElementById('imageDisplay');
-      const valentineQuestion = document.getElementById('valentineQuestion');
-      const responseButtons = document.getElementById('responseButtons');
-      const loveNote = document.getElementById('loveNote');
-      const destinyLabel = document.getElementById('destinyLabel');
-
-      // Initialize regular click sound effect asset with a cache buster
-      const clickFX = new Audio('click-sound.mp3?v=2');
-      clickFX.preload = 'auto';
-      clickFX.load();
-
-      // Initialize the trolling/evading sound effect for the hyper-speed runaway phase
-      const evadeFX = new Audio('evade-sound.mp3?v=2');
-      evadeFX.preload = 'auto';
-      evadeFX.load();
-
-      // Handle transition from Greetings Stage to Proposal Stage
+// Handle transition from Greetings Stage to Proposal Stage
       enterButton.addEventListener('click', () => {
         // Play the click feedback sound immediately
         clickFX.currentTime = 0;
         clickFX.play();
+
+        // RE-UNLOCK AUDIO PATHS FOR MOBILE & CHROME
+        // This forces the browser to give our script full audio access for the next stages
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
 
         // Fade out and scale down the greeting panel layout
         greetingStage.classList.add('scale-95', 'opacity-0');
@@ -141,60 +27,3 @@
           }, 20);
         }, 500);
       });
-
-      // Configuration
-      const GROWTH_PER_CLICK = 35;
-      const FONT_GROWTH_PER_CLICK = 25;
-      const MAX_NO_CLICKS = 5;
-
-      const IMAGE_PATHS = [
-        './images/image1.gif',
-        './images/image2.gif',
-        './images/image3.gif',
-        './images/image4.gif',
-        './images/image5.gif',
-        './images/image6.gif',
-        './images/image7.gif',
-      ];
-
-      // Playfully pleading personalized messages for Fio
-      const NO_BUTTON_MESSAGES = [
-        'No',
-        'Wait, are you sure? 🥺',
-        'Think about it again, Fio...',
-        'Please say yes? ❤️',
-        'I promise to always make you smile!',
-        'No 🏃‍♂️',
-      ];
-
-      const ALT_TEXTS = [
-        'Cute kitten with flowers',
-        'Sad kitten looking up',
-        'Kitten begging',
-        'Heartbroken kitten',
-        'Crying kitten',
-        'Devastated kitten',
-        'Happy kitten celebrating',
-      ];
-
-      // State
-      let noClickCount = 0;
-      let buttonHeight = 48;
-      let buttonWidth = 80;
-      let fontSize = 20;
-
-      // Function to move the No button randomly around the screen with hyper-speed transitions
-      function teleportNoButton() {
-        evadeFX.currentTime = 0;
-        evadeFX.play();
-
-        noButton.style.width = '65px';
-        noButton.style.height = '35px';
-        noButton.style.fontSize = '14px';
-        noButton.style.padding = '0px';
-        
-        noButton.style.transition = 'all 0.08s cubic-bezier(0.19, 1, 0.22, 1)';
-        
-        const padding = 40;
-        const maxX = window.innerWidth - 65 - padding;
-        const maxY = window.innerHeight - 35
